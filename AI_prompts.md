@@ -358,6 +358,10 @@ What the first prompt was missing: the Homework 5 database itself. `data-2` turn
 
 > for the failed one - what should i do?
 
+### Follow-up prompt
+
+> so all done?
+
 What the earlier prompts were missing: they didn't cover what happens when an agent run fails partway. The answer was to retry temporary Portkey errors automatically, reset the database, and rerun all three tickets from a clean start.
 
 ---
