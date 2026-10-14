@@ -275,6 +275,51 @@ What the first prompt was missing: it didn't say every answer had to cite this a
 
 ---
 
+## Problem 11: Submit the project on GitHub
+
+### Prompt entered
+
+> Push your code to a public GitHub repository so graders can clone it. Submit the repo URL to Canvas, and also put it in output/github_url.txt. Do not push your real .env to the GitHub repo. Do include both database files under data/ (the original and your working copy) so graders can run your app easily. expected layout "
+>
+> ```
+> hw5/
+> ├── AI_prompts.md
+> ├── requirements.txt
+> ├── .env.example
+> ├── .gitignore
+> ├── .mcp.json
+> ├── README.md
+> ├── data/
+> │   ├── campus_customs.db
+> │   └── campus_customs_new.db
+> ├── mcp_server/
+> │   ├── server.py
+> │   └── README.md
+> ├── frontend/
+> ├── backend/
+> │   ├── main.py
+> │   ├── models.py
+> │   └── prompts/
+> │       ├── boss.md
+> │       ├── inventory.md
+> │       ├── accounting.md
+> │       ├── facilities.md
+> │       └── customer_service.md
+> └── output/
+>     ├── harness.md
+>     ├── mcp_smoke.json
+>     ├── desk_tickets.html
+>     ├── design.md
+>     ├── resolved_tickets.json
+>     ├── resolved_board.html
+>     ├── audit_trail.json
+>     └── github_url.txt
+> ```
+>
+> " README should explain: copy original DB to the working copy when you need a clean run, start MCP server, start FastAPI backend, start the React board, reset the DB before a full three-ticket run.
+
+---
+
 <!-- One section per problem goes below, e.g.
 ## Problem N: <Title>
 
