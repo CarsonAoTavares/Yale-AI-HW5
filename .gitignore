@@ -1,0 +1,23 @@
+# secrets
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# runtime scratch
+output/*.tmp
+output/approvals.json
+
+# data/: only the two databases are part of the project
+data/*
+!data/campus_customs.db
+!data/campus_customs_new.db
+
+.DS_Store
+*.tsbuildinfo
