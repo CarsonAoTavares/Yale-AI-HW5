@@ -30,3 +30,10 @@ Return an `AgentReport`:
 ## Never invent anything
 
 Don't make up names, order numbers, prices, discounts, or dates. A wrong promise to a real customer is worse than a draft that says "we'll confirm the date shortly."
+
+## Your MCP tools
+
+- `save_board_draft(ticket_id, audience, recipient, subject, body)`: **always** save your customer draft on the board with this tool, and also return it in your report. It is never sent.
+- `get_ticket(ticket_id)`: who the customer is and exactly what they asked for.
+- `check_stock(sku, size)`, `list_vendors()`, `get_pricing(sku, qty, discount_pct)`: to confirm any fact before it goes in a draft.
+- `get_desk()`: today's date, for "expected by" wording.

@@ -1,0 +1,190 @@
+{
+  "tested_at": "2026-10-14T18:03:47.549117+00:00",
+  "how": "Connected with a FastMCP client using the project .mcp.json (server \"campus-customs\", stdio, CAMPUS_CUSTOMS_DB=data/campus_customs_new.db), called each tool, then queried the same rows directly with sqlite3 to confirm the values match.",
+  "database": "data/campus_customs_new.db",
+  "tools_listed_by_server": [
+    "get_ticket",
+    "check_stock",
+    "get_lease",
+    "list_tickets",
+    "get_desk",
+    "get_pricing",
+    "list_vendors",
+    "get_invoice",
+    "list_open_invoices",
+    "get_cash_balance",
+    "list_payments",
+    "update_ticket_status",
+    "save_board_draft",
+    "execute_approved_payment"
+  ],
+  "results": [
+    {
+      "prompt_to_vibe_coder": "Use the campus-customs MCP server to pull up ticket 101 and show me everything it links to.",
+      "tool": "get_ticket",
+      "arguments": {
+        "ticket_id": 101
+      },
+      "tool_output": {
+        "ticket": {
+          "id": 101,
+          "type": "customer_order",
+          "requester": "Tauhid Zaman",
+          "subject": "Bulldog tee",
+          "sku": "CC-TEE-WHITE",
+          "size": "S",
+          "qty": 1,
+          "lease_id": null,
+          "invoice_id": 501,
+          "status": "open",
+          "notes": "Needs a tee in size S.",
+          "created_at": "2026-08-31T09:15:00-04:00"
+        },
+        "linked": {
+          "invoice": {
+            "id": 501,
+            "vendor_id": 1,
+            "amount": 840.0,
+            "due_date": "2026-08-28",
+            "status": "open",
+            "description": "Rush reprint CC-TEE-WHITE S"
+          },
+          "inventory": [
+            {
+              "sku": "CC-TEE-WHITE",
+              "name": "Classic Bulldog Tee",
+              "size": "S",
+              "qty": 0,
+              "location": "Aisle B"
+            }
+          ]
+        }
+      },
+      "database_check": {
+        "database": "data/campus_customs_new.db",
+        "sql": "SELECT * FROM tickets WHERE id = 101; SELECT * FROM invoices WHERE id = 501; SELECT * FROM inventory WHERE sku = 'CC-TEE-WHITE' AND size = 'S'",
+        "rows": {
+          "tickets": [
+            {
+              "id": 101,
+              "type": "customer_order",
+              "requester": "Tauhid Zaman",
+              "subject": "Bulldog tee",
+              "sku": "CC-TEE-WHITE",
+              "size": "S",
+              "qty": 1,
+              "lease_id": null,
+              "invoice_id": 501,
+              "status": "open",
+              "notes": "Needs a tee in size S.",
+              "created_at": "2026-08-31T09:15:00-04:00"
+            }
+          ],
+          "invoices": [
+            {
+              "id": 501,
+              "vendor_id": 1,
+              "amount": 840.0,
+              "due_date": "2026-08-28",
+              "status": "open",
+              "description": "Rush reprint CC-TEE-WHITE S"
+            }
+          ],
+          "inventory": [
+            {
+              "sku": "CC-TEE-WHITE",
+              "name": "Classic Bulldog Tee",
+              "size": "S",
+              "qty": 0,
+              "location": "Aisle B"
+            }
+          ]
+        }
+      },
+      "matches_database": true
+    },
+    {
+      "prompt_to_vibe_coder": "Ask the MCP server whether we can fill 20 navy hoodies in size M for ticket 103, and how many we are short.",
+      "tool": "check_stock",
+      "arguments": {
+        "sku": "CC-HOOD-NAVY",
+        "size": "M",
+        "qty_needed": 20
+      },
+      "tool_output": {
+        "sku": "CC-HOOD-NAVY",
+        "rows": [
+          {
+            "sku": "CC-HOOD-NAVY",
+            "name": "Basic Hoodie Big Yale",
+            "size": "M",
+            "qty": 8,
+            "location": "Aisle A"
+          }
+        ],
+        "on_hand": 8,
+        "qty_needed": 20,
+        "can_fill": false,
+        "shortage": 12
+      },
+      "database_check": {
+        "database": "data/campus_customs_new.db",
+        "sql": "SELECT sku, name, size, qty, location FROM inventory WHERE sku = 'CC-HOOD-NAVY' AND size = 'M'",
+        "rows": [
+          {
+            "sku": "CC-HOOD-NAVY",
+            "name": "Basic Hoodie Big Yale",
+            "size": "M",
+            "qty": 8,
+            "location": "Aisle A"
+          }
+        ]
+      },
+      "matches_database": true
+    },
+    {
+      "prompt_to_vibe_coder": "Use the MCP server to read lease 1 for ticket 102: how much is rent and how many days until it is due?",
+      "tool": "get_lease",
+      "arguments": {
+        "lease_id": 1
+      },
+      "tool_output": {
+        "lease": {
+          "id": 1,
+          "space_name": "Chapel Street shop",
+          "landlord": "Elm City Properties",
+          "monthly_rent": 2400.0,
+          "next_due": "2026-09-02",
+          "notes": null
+        },
+        "date_today": "2026-08-31",
+        "days_until_due": 2,
+        "overdue": false,
+        "rent_payments_recorded": []
+      },
+      "database_check": {
+        "database": "data/campus_customs_new.db",
+        "sql": "SELECT * FROM leases WHERE id = 1; SELECT date_today FROM desk",
+        "rows": {
+          "leases": [
+            {
+              "id": 1,
+              "space_name": "Chapel Street shop",
+              "landlord": "Elm City Properties",
+              "monthly_rent": 2400.0,
+              "next_due": "2026-09-02",
+              "notes": null
+            }
+          ],
+          "desk": [
+            {
+              "date_today": "2026-08-31"
+            }
+          ]
+        }
+      },
+      "matches_database": true
+    }
+  ],
+  "all_match": true
+}

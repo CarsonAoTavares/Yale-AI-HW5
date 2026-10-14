@@ -21,3 +21,5 @@ data/*
 
 .DS_Store
 *.tsbuildinfo
+data-2/
+data-3/

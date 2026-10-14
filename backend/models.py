@@ -21,17 +21,24 @@ class Finding(BaseModel):
 class ApprovalRequest(BaseModel):
     """A payment or purchase order prepared for a human to approve on the dashboard.
 
-    Agents only prepare these. Nothing is paid until a person approves it.
+    Agents only prepare these. Nothing is paid until a person approves it, and the
+    MCP payment tool re-checks every value against the database before paying.
     """
 
-    kind: Literal['payment', 'purchase_order']
+    kind: Literal['invoice', 'rent', 'purchase_order'] = Field(
+        description="'invoice' pays an invoice, 'rent' pays a lease's monthly rent, 'purchase_order' buys stock from a vendor."
+    )
     ticket_id: int | None = None
-    payee: str = Field(description='Vendor, landlord, or other party exactly as named in the database.')
-    amount: float = Field(gt=0, description='Amount in dollars, taken from the database or computed from database values.')
-    pay_from_account: str | None = Field(default=None, description='cash_accounts identifier the money would come from.')
-    reference: str = Field(description='What this pays for, e.g. an invoice ID or lease ID from the database.')
+    payee: str = Field(description='Vendor or landlord exactly as named in the database.')
+    amount: float = Field(gt=0, description='Dollars: the invoice amount, the monthly_rent, or unit_cost x qty, from the database.')
+    pay_from_account: str = Field(default='checking', description='cash_accounts.name the money comes from.')
+    ref_id: int | None = Field(default=None, description='Invoice id for invoice, lease id for rent; empty for purchase orders.')
+    vendor_id: int | None = Field(default=None, description='Purchase orders only: vendors.id.')
+    sku: str | None = Field(default=None, description='Purchase orders only.')
+    size: str | None = Field(default=None, description='Purchase orders only.')
+    qty: int | None = Field(default=None, description='Purchase orders only.')
     reason: str = Field(description='Why this payment or order is needed now.')
-    cash_check: str = Field(description='Balance of the paying account versus the amount, as read from the database.')
+    cash_check: str = Field(description='Balance of the paying account versus the amount, as read from get_cash_balance.')
 
 
 class DraftMessage(BaseModel):

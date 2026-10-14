@@ -7,9 +7,10 @@ import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
+from openai import AsyncOpenAI
 from fastmcp.client.transports import StdioTransport
 from pydantic_ai.mcp import MCPToolset
-from pydantic_ai.models.openai import OpenAIChatModel
+from pydantic_ai.models.openai import OpenAIResponsesModel
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.usage import UsageLimits
 
@@ -29,7 +30,7 @@ os.environ.setdefault('PYDANTIC_AI_NO_BANNER', '1')
 # The assignment allows exactly one model for every agent. It is deliberately
 # not configurable so no other model can sneak in through an env var.
 MODEL_NAME = 'gpt-6-luna'
-PORTKEY_BASE_URL = 'https://ai.portkey.ai/v1'
+PORTKEY_BASE_URL = 'https://api.portkey.ai/v1'
 
 # Token guardrails for one full ticket run (all agents and delegations combined).
 TEAM_USAGE_LIMITS = UsageLimits(
@@ -41,12 +42,16 @@ TEAM_USAGE_LIMITS = UsageLimits(
 MAX_DELEGATION_DEPTH = int(os.getenv('MAX_DELEGATION_DEPTH', '3'))
 
 
-def build_model() -> OpenAIChatModel:
+def build_model() -> OpenAIResponsesModel:
     api_key = os.getenv('PORTKEY_API_KEY')
     if not api_key:
         raise RuntimeError('PORTKEY_API_KEY is not set. Add it to Homework 5/.env.')
-    provider = OpenAIProvider(api_key=api_key, base_url=PORTKEY_BASE_URL)
-    return OpenAIChatModel(MODEL_NAME, provider=provider)
+    # Retry transient gateway errors (429/5xx) per request, with backoff, so one
+    # blip doesn't throw away a whole multi-agent run.
+    client = AsyncOpenAI(api_key=api_key, base_url=PORTKEY_BASE_URL, max_retries=6, timeout=300)
+    provider = OpenAIProvider(openai_client=client)
+    # gpt-6-luna only supports function tools through the Responses API.
+    return OpenAIResponsesModel(MODEL_NAME, provider=provider)
 
 
 def build_mcp_transport() -> StdioTransport:

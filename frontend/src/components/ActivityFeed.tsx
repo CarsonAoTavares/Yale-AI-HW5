@@ -81,19 +81,19 @@ function Line({ e }: { e: ActivityEntry }) {
 }
 
 export function ActivityFeed({ entries, running }: { entries: ActivityEntry[]; running: boolean }) {
-  const end = useRef<HTMLLIElement>(null)
+  // Keep the newest line in view by scrolling the feed box itself, not the page.
+  const box = useRef<HTMLOListElement>(null)
   useEffect(() => {
-    end.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    box.current?.scrollTo({ top: box.current.scrollHeight, behavior: 'smooth' })
   }, [entries.length])
 
   if (!entries.length) {
     return <div className="empty">{running ? 'Waiting for the first agent to speak…' : 'No activity yet. Dispatch the team to watch them work.'}</div>
   }
   return (
-    <ol className="feed">
+    <ol className="feed" ref={box}>
       {entries.map((e, i) => <Line key={`${e.timestamp}-${i}`} e={e} />)}
-      {running && <li ref={end} className="line line--typing"><span className="typing"><i /><i /><i /></span></li>}
-      {!running && <li ref={end} />}
+      {running && <li className="line line--typing"><span className="typing"><i /><i /><i /></span></li>}
     </ol>
   )
 }

@@ -318,6 +318,48 @@ What the first prompt was missing: it didn't say every answer had to cite this a
 >
 > " README should explain: copy original DB to the working copy when you need a clean run, start MCP server, start FastAPI backend, start the React board, reset the DB before a full three-ticket run.
 
+### Follow-up prompt
+
+> why are these missing? can you make it not missing "
+>
+> What was kept out: I checked that your real `.env` isn't in the repo; only `.env.example` with a placeholder key is. `.venv` and `node_modules` aren't pushed either. Neither are the Homework 3 photos in `data/`; the repo is set to accept only the two database files there.
+> Still missing from the expected layout:
+>
+> - data/campus_customs.db and data/campus_customs_new.db
+> - mcp_server/server.py and mcp_server/README.md
+> - output/mcp_smoke.json, `resolved_tickets.json`, `resolved_board.html`, and `audit_trail.json` with real runs
+>
+> Also, `.mcp.json` points at mcp_server/server.py, which doesn't exist yet, so it won't connect until the server is written.
+> Once the Homework 5 `data.zip` is in `Homework 5/`, I'll finish Problems 1–4, 6, 9 and 10, add both databases and push again. The URL stays the same, so you can submit it to Canvas then.
+
+### Follow-up prompt
+
+> i jsut dropped the data-2 folder - and complete all the missing steps or stuff
+
+### Follow-up prompt
+
+> i got into the data -3 folder - try it again, fix everything and update github
+
+What the first prompt was missing: the Homework 5 database itself. `data-2` turned out to be the older store database, and `data-3/campus_customs.db` had the nine Homework 5 tables, which unblocked every remaining problem.
+
+### Follow-up prompt
+
+> so all done? giv eme the new link and everthing i need to submit fo rmy homework
+
+### Follow-up prompt
+
+> can you show me my website
+
+### Follow-up prompt
+
+> ok tell me when its all pushed
+
+### Follow-up prompt
+
+> for the failed one - what should i do?
+
+What the earlier prompts were missing: they didn't cover what happens when an agent run fails partway. The answer was to retry temporary Portkey errors automatically, reset the database, and rerun all three tickets from a clean start.
+
 ---
 
 <!-- One section per problem goes below, e.g.

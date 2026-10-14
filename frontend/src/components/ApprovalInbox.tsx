@@ -1,11 +1,19 @@
 import { useState } from 'react'
 import { money } from '../agents'
-import type { StoredApproval } from '../types'
+import type { ApprovalRequest, StoredApproval } from '../types'
 
 interface Props {
   approvals: StoredApproval[]
   onApprove: (id: string) => Promise<void>
   onReject: (id: string) => Promise<void>
+}
+
+const KIND = { invoice: 'Invoice payment', rent: 'Rent payment', purchase_order: 'Purchase order' } as const
+
+function describe(r: ApprovalRequest): string {
+  if (r.kind === 'invoice') return `Invoice #${r.ref_id}`
+  if (r.kind === 'rent') return `Lease #${r.ref_id} monthly rent`
+  return `${r.qty} × ${r.sku} (${r.size}) from vendor #${r.vendor_id}`
 }
 
 const STAMP: Record<string, string> = { approved: 'Paid', rejected: 'Rejected', failed: 'Refused', void: 'Void' }
@@ -37,14 +45,14 @@ export function ApprovalInbox({ approvals, onApprove, onReject }: Props) {
       {pending.map((a) => (
         <article key={a.id} className="check">
           <div className="check__top">
-            <span className="check__kind">{a.request.kind === 'payment' ? 'Payment' : 'Purchase order'}</span>
+            <span className="check__kind">{KIND[a.request.kind]}</span>
             <span className="muted">ticket #{a.ticket_id}</span>
           </div>
           <div className="check__payee">Pay to <b>{a.request.payee}</b></div>
           <div className="check__amount">{money(a.request.amount)}</div>
           <dl className="check__meta">
-            <dt>For</dt><dd>{a.request.reference}</dd>
-            {a.request.pay_from_account && (<><dt>From</dt><dd>{a.request.pay_from_account}</dd></>)}
+            <dt>For</dt><dd>{describe(a.request)}</dd>
+            <dt>From</dt><dd>{a.request.pay_from_account}</dd>
             <dt>Why</dt><dd>{a.request.reason}</dd>
             <dt>Cash check</dt><dd>{a.request.cash_check}</dd>
           </dl>

@@ -10,7 +10,7 @@ import { TicketRail, isResolved, ticketTitle } from './components/TicketRail'
 import type { ActivityEntry, AgentRole, RunState, StoredApproval, Ticket } from './types'
 
 const POLL_MS = 1200
-const HIDDEN_FIELDS = new Set(['ticket_id', 'latest_run'])
+const HIDDEN_FIELDS = new Set(['id', 'ticket_id', 'latest_run'])
 
 export default function App() {
   const [tickets, setTickets] = useState<Ticket[]>([])
@@ -20,7 +20,6 @@ export default function App() {
   const [activity, setActivity] = useState<ActivityEntry[]>([])
   const [approvals, setApprovals] = useState<StoredApproval[]>([])
   const [balance, setBalance] = useState<number | null>(null)
-  const [prevBalance, setPrevBalance] = useState<number | null>(null)
   const [cashError, setCashError] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
@@ -40,13 +39,10 @@ export default function App() {
     }
   }, [])
 
-  const loadCash = useCallback(async (afterPayment = false) => {
+  const loadCash = useCallback(async () => {
     try {
       const b = readBalance(await api.cash())
-      setBalance((old) => {
-        if (afterPayment) setPrevBalance(old)
-        return b
-      })
+      setBalance(b)
       setCashError(b === null ? 'The cash tool returned no balance field.' : null)
     } catch (e) {
       setCashError((e as Error).message)
@@ -119,7 +115,7 @@ export default function App() {
     try {
       const a = await api.approve(id)
       flash(`Paid ${a.request.payee}.`)
-      await loadCash(true)
+      await loadCash()
     } catch (e) {
       flash(`Payment refused: ${(e as Error).message}`)
     }
@@ -138,12 +134,25 @@ export default function App() {
       flash(`Database restored. ${r.voided_approvals} pending request(s) voided.`)
       setRun(null)
       setActivity([])
-      setPrevBalance(null)
       await Promise.all([loadTickets(), loadCash(), loadApprovals()])
     } catch (e) {
       flash((e as Error).message)
     }
   }
+
+  const currentRunIds = useMemo(() => new Set(tickets.map((t) => t.latest_run?.run_id).filter(Boolean) as string[]), [tickets])
+  const visibleApprovals = useMemo(
+    () => approvals.filter((a) => a.status === 'pending' || currentRunIds.has(a.run_id)),
+    [approvals, currentRunIds],
+  )
+  const lastPayment = useMemo(() => {
+    const paid = visibleApprovals.filter((a) => a.status === 'approved' && a.decided_at).sort((a, b) => a.decided_at!.localeCompare(b.decided_at!))
+    const last = paid[paid.length - 1]
+    const r = last?.result as { balance_before?: number; balance_after?: number } | undefined
+    return last && typeof r?.balance_before === 'number' && typeof r?.balance_after === 'number'
+      ? { before: r.balance_before, after: r.balance_after, label: `${last.request.kind.replace('_', ' ')} to ${last.request.payee}` }
+      : null
+  }, [visibleApprovals])
 
   const approvedRunIds = useMemo(() => {
     const byRun = new Map<string, StoredApproval[]>()
@@ -226,8 +235,8 @@ export default function App() {
         </main>
 
         <aside className="side">
-          <CashTill balance={balance} previous={prevBalance} error={cashError} />
-          <ApprovalInbox approvals={approvals} onApprove={approve} onReject={reject} />
+          <CashTill balance={balance} lastPayment={lastPayment} error={cashError} />
+          <ApprovalInbox approvals={visibleApprovals} onApprove={approve} onReject={reject} />
         </aside>
       </div>
 

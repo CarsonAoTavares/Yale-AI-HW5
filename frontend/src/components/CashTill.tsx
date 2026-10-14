@@ -2,13 +2,12 @@ import { money } from '../agents'
 
 interface Props {
   balance: number | null
-  previous: number | null
+  lastPayment: { before: number; after: number; label: string } | null
   error: string | null
 }
 
-/** Checking balance. After an approved payment it shows the drop next to the new number. */
-export function CashTill({ balance, previous, error }: Props) {
-  const delta = balance !== null && previous !== null ? balance - previous : 0
+/** Checking balance, plus the drop from the most recent approved payment (from the payment tool's own before/after). */
+export function CashTill({ balance, lastPayment, error }: Props) {
   return (
     <section className="till">
       <div className="till__label">Checking account</div>
@@ -19,9 +18,10 @@ export function CashTill({ balance, previous, error }: Props) {
       ) : (
         <div className="till__amount" key={balance}>{money(balance)}</div>
       )}
-      {delta !== 0 && (
-        <div className={`till__delta ${delta < 0 ? 'down' : 'up'}`} key={`d${balance}`}>
-          {delta < 0 ? '▼' : '▲'} {money(Math.abs(delta))} since last payment
+      {lastPayment && (
+        <div className="till__delta down" key={`d${lastPayment.after}`}>
+          ▼ {money(lastPayment.before - lastPayment.after)} · {lastPayment.label}
+          <small>{money(lastPayment.before)} → {money(lastPayment.after)}</small>
         </div>
       )}
       <div className="till__foot">from cash_accounts · outflows only</div>

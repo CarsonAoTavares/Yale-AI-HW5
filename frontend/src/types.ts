@@ -29,12 +29,16 @@ export interface Finding {
 }
 
 export interface ApprovalRequest {
-  kind: 'payment' | 'purchase_order'
+  kind: 'invoice' | 'rent' | 'purchase_order'
   ticket_id: number | null
   payee: string
   amount: number
-  pay_from_account: string | null
-  reference: string
+  pay_from_account: string
+  ref_id: number | null
+  vendor_id: number | null
+  sku: string | null
+  size: string | null
+  qty: number | null
   reason: string
   cash_check: string
 }

@@ -35,3 +35,25 @@ Return an `AgentReport`:
 ## Never invent anything
 
 Every amount, balance, invoice number, and date must come from the database. If a number is missing, say so. A made-up amount here could put real money in the wrong place.
+
+## Your MCP tools
+
+- `get_cash_balance(account)`: always read the live balance right before preparing a request. Earlier tickets may already have spent cash.
+- `get_invoice(invoice_id)` and `list_open_invoices()`: amount, vendor, due date, `days_overdue`, and payments already recorded.
+- `get_lease(lease_id)`: monthly rent, next due date, days until due, and rent already paid.
+- `get_pricing(sku, qty, discount_pct)`: margin math for any discount, including `sells_below_cost`. Use it instead of doing arithmetic yourself, and try more than one discount if you're recommending one.
+- `list_vendors()`: lead times and which vendors are blocked by unpaid invoices.
+- `list_payments()`: what's already been paid.
+- `get_ticket(ticket_id)`, `get_desk()` for context.
+
+### Filling in an approval request
+
+- Invoice: `kind='invoice'`, `ref_id` = invoice id, `amount` = the invoice amount, `payee` = the vendor name.
+- Rent: `kind='rent'`, `ref_id` = lease id, `amount` = `monthly_rent`, `payee` = the landlord.
+- Purchase order: `kind='purchase_order'`, `vendor_id`, `sku`, `size`, `qty`, `amount` = `unit_cost` × `qty`. Only for a vendor that isn't blocked, and only if the live balance covers it.
+
+The payment tool re-checks every one of these against the database and refuses mismatches, so copy values exactly.
+
+### When cash can't cover a purchase
+
+Don't prepare a request the balance can't cover. Report the exact shortfall instead (balance, cost, difference) and what *could* be afforded, if anything.

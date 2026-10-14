@@ -83,6 +83,7 @@ async def list_tickets() -> list[dict[str, Any]]:
     """All tickets with their open/resolved status, plus the latest agent run on each."""
     tickets = await _mcp('list_tickets')
     for t in tickets:
+        t['ticket_id'] = t['id']
         runs = [r for r in RUNS.values() if r.ticket_id == t.get('ticket_id')]
         latest = max(runs, key=lambda r: r.started_at, default=None)
         if latest:
@@ -164,11 +165,8 @@ async def approve(approval_id: str) -> approvals.StoredApproval:
         req = item.request
         args = {
             'approval_id': item.id,
-            'kind': req.kind,
-            'payee': req.payee,
-            'amount': req.amount,
-            'pay_from_account': req.pay_from_account,
-            'reference': req.reference,
+            'approved_by': 'dashboard user',
+            **req.model_dump(include={'kind', 'amount', 'pay_from_account', 'ref_id', 'vendor_id', 'sku', 'size', 'qty'}),
         }
         audit.record('human_approved', run_id=item.run_id, agent='human', depth=0, ticket_id=item.ticket_id, request=req)
         try:
@@ -181,7 +179,21 @@ async def approve(approval_id: str) -> approvals.StoredApproval:
             raise HTTPException(status_code=503, detail=f'MCP server unavailable: {exc}') from exc
         item = approvals.set_status(approval_id, 'approved', result)
         audit.record('payment_executed', run_id=item.run_id, agent='human', depth=0, ticket_id=item.ticket_id, result=result)
+        await _resolve_if_fully_paid(item)
         return item
+
+
+async def _resolve_if_fully_paid(item: approvals.StoredApproval) -> None:
+    """A ticket left awaiting approval is resolved once every payment from its run is approved and paid."""
+    siblings = [a for a in approvals.list_approvals() if a.run_id == item.run_id]
+    if item.ticket_id is None or not all(a.status == 'approved' for a in siblings):
+        return
+    paid = ', '.join(f'{a.request.kind} ${a.request.amount:,.2f} to {a.request.payee}' for a in siblings)
+    ticket = await call_tool(
+        'update_ticket_status',
+        {'ticket_id': item.ticket_id, 'status': 'resolved', 'note': f'Approved and paid on the dashboard: {paid}.'},
+    )
+    audit.record('ticket_resolved_after_approval', run_id=item.run_id, agent='human', depth=0, ticket_id=item.ticket_id, ticket=ticket)
 
 
 @app.post('/api/approvals/{approval_id}/reject')

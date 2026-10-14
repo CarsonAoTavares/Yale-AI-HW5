@@ -42,12 +42,12 @@ Each agent has a fixed color, initials avatar, and name, used everywhere it appe
 ## Cash balance
 
 - The checking balance (from `/api/cash`, read through MCP from `cash_accounts`) sits on a **receipt**: white paper with a zig-zag torn bottom, a large serif number, and tabular figures so digits don't jump.
-- After you approve a payment, the dashboard reloads the balance. The new number ticks in, and a red **▼ $amount since last payment** line shows exactly how much it dropped.
+- After you approve a payment, the dashboard reloads the balance. The new number ticks in, and a red line shows the last payment (for example **▼ $2,400.00 · rent to Elm City Properties**) with its before → after balances, taken from the payment tool's own result.
 - If the payment tool refuses (not enough cash), nothing changes, a toast explains why, and the request moves to history with a red **REFUSED** stamp.
 
 ## Approvals
 
-Each pending payment or purchase order is drawn as a **check**: green security-pattern paper, "Pay to" the payee, the amount in large type, then what it's for, which account, why, and the agent's cash check against the balance. **Approve** and **Reject** sit on the bottom right. A red badge counts what's waiting. Decided requests drop into a short history with PAID, REJECTED, REFUSED, or VOID stamps.
+Each pending payment or purchase order is drawn as a **check**: green security-pattern paper, "Pay to" the payee, the amount in large type, then what it's for, which account, why, and the agent's cash check against the balance. **Approve** and **Reject** sit on the bottom right. A red badge counts what's waiting. Decided requests from the current run drop into a short history with PAID, REJECTED, REFUSED, or VOID stamps. Requests from runs wiped by a reset are hidden.
 
 The inbox subtitle says it plainly: *Agents prepare payments. Nothing moves until you approve.*
 

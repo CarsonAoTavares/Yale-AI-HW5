@@ -223,6 +223,7 @@ q { font-style: italic; }
 .till__amount--loading { color: var(--line); }
 .till__delta { font: 600 13px var(--mono); animation: rise .4s both; }
 .till__delta.down { color: var(--stamp-red); }
+.till__delta small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; }
 .till__delta.up { color: var(--stamp-green); }
 .till__error { margin: 8px 0; font-weight: 600; color: var(--stamp-red); }
 .till__error small, .empty small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; margin-top: 4px; overflow-wrap: anywhere; }
