@@ -184,7 +184,7 @@ export default function App() {
           </div>
         </div>
         <div className="topbar__right">
-          <span className="model-chip" title="Every agent runs on this model via Portkey">gpt-6-luna</span>
+          <span className="model-chip" title="Every agent runs on this model">Claude Opus 5.5</span>
           <button className="btn btn--ghost" onClick={reset} disabled={running}>↺ Fresh run</button>
         </div>
       </header>

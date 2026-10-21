@@ -1,4 +1,6 @@
-pydantic-ai-slim[openai,mcp]>=2.56
+pydantic-ai-slim[anthropic,mcp]>=2.59
+# pydantic-ai 2.59 breaks on anthropic 2.x (BetaMessageParam became a Union)
+anthropic>=1.12.1,<2
 fastmcp>=4.1
 fastapi>=0.143
 uvicorn>=0.54

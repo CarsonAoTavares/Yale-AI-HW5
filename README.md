@@ -3,7 +3,7 @@
 A team of five AI agents (Boss, Inventory, Accounting, Facilities, Customer Service) works the Campus Customs operations board. They read and update the shop's database only through an MCP server, a FastAPI backend runs the team, and a React dashboard lets a person watch the agents and approve every payment.
 
 - **MCP server:** `mcp_server/server.py` (FastMCP) over `data/campus_customs_new.db`
-- **Backend:** `backend/` (FastAPI + PydanticAI). Every agent uses `gpt-6-luna` through Portkey.
+- **Backend:** `backend/` (FastAPI + PydanticAI). Every agent uses Claude Opus 5.5 (`claude-opus-5-5`, low effort) through the Anthropic API. The graded submission on `main` used `gpt-6-luna` through Portkey.
 - **Dashboard:** `frontend/` (React + Vite + TypeScript)
 - **Docs and evidence:** `output/` (`harness.md` has the full system description)
 
@@ -14,7 +14,7 @@ You need Python 3.12+ and Node 20+.
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-cp .env.example .env          # then put your PORTKEY_API_KEY in .env
+cp .env.example .env          # then put your ANTHROPIC_API_KEY in .env
 cd frontend && npm install && cd ..
 ```
 
@@ -71,7 +71,7 @@ This copies `campus_customs.db` over `campus_customs_new.db` and voids any pendi
 The `Dockerfile` builds the React board and serves it from the FastAPI backend, so the whole app is one web service.
 
 1. On https://render.com choose **New → Blueprint** and pick this repo and the `deploy` branch (it reads `render.yaml`).
-2. When asked, paste your `PORTKEY_API_KEY`. Never commit it.
+2. When asked, paste your `ANTHROPIC_API_KEY`. Never commit it.
 3. Render builds the image and gives you a `*.onrender.com` link. It redeploys on every push to `deploy`.
 
 The free plan sleeps after 15 minutes idle, so the first load can take about a minute. Its disk is not kept between deploys: the database goes back to the committed copy each time.
