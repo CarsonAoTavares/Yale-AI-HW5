@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: campus-customs
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    branch: deploy
+    autoDeploy: true
+    envVars:
+      - key: PORTKEY_API_KEY
+        sync: false   # set in the Render dashboard; never commit it

@@ -66,6 +66,16 @@ curl -X POST http://localhost:8000/api/reset
 
 This copies `campus_customs.db` over `campus_customs_new.db` and voids any pending approvals left from the previous run. The audit trail in `output/audit_trail.json` is append-only and is not cleared.
 
+## Deploy online (Render, free)
+
+The `Dockerfile` builds the React board and serves it from the FastAPI backend, so the whole app is one web service.
+
+1. On https://render.com choose **New → Blueprint** and pick this repo and the `deploy` branch (it reads `render.yaml`).
+2. When asked, paste your `PORTKEY_API_KEY`. Never commit it.
+3. Render builds the image and gives you a `*.onrender.com` link. It redeploys on every push to `deploy`.
+
+The free plan sleeps after 15 minutes idle, so the first load can take about a minute. Its disk is not kept between deploys: the database goes back to the committed copy each time.
+
 ## Safety in one paragraph
 
 Agents never send messages or move money. Customer, vendor, and landlord messages are drafts on the board. Payments and purchase orders are prepared as approval requests. Only a person clicking **Approve** calls the payment tool, which agents can't see, and that tool refuses any payment that would make a balance negative. Each ticket run is capped at 60 model requests and 400,000 tokens. Details are in `output/harness.md`.

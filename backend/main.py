@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from fastapi import FastAPI, HTTPException, Query  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
 from pydantic import BaseModel  # noqa: E402
 
 from backend import approvals, audit  # noqa: E402
@@ -229,3 +230,13 @@ async def reset() -> dict[str, Any]:
     RUNS.clear()
     audit.record('database_reset', run_id='reset', agent='human', depth=0, ticket_id=None, voided_approvals=voided)
     return {'ok': True, 'restored': WORKING_DB.name, 'from': ORIGINAL_DB.name, 'voided_approvals': voided}
+
+
+# --- Dashboard -----------------------------------------------------------------
+
+# When the React board has been built (`npm run build`), serve it from the same
+# origin as the API so the whole app runs as one web service. Mounted last so
+# the /api routes above take priority.
+FRONTEND_DIST = Path(__file__).resolve().parent.parent / 'frontend' / 'dist'
+if FRONTEND_DIST.is_dir():
+    app.mount('/', StaticFiles(directory=FRONTEND_DIST, html=True), name='dashboard')

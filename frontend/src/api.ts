@@ -9,7 +9,8 @@ export class ApiError extends Error {
 }
 
 // The FastAPI backend (Problem 7). Its CORS settings allow this Vite page's origin.
-export const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+// A production build is served by the backend itself, so it calls its own origin.
+export const API_BASE = import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? '' : 'http://localhost:8000')
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}/api${path}`, init)
