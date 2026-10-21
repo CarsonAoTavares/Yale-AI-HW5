@@ -70,4 +70,6 @@ def build_mcp_transport() -> StdioTransport:
 
 def build_mcp_toolset() -> MCPToolset:
     """Every shop fact the agents see comes through this MCP connection."""
-    return MCPToolset(build_mcp_transport(), id='campus_customs')
+    # Starting the server takes ~12 s on Render's free instance, well past the
+    # default 5 s handshake timeout.
+    return MCPToolset(build_mcp_transport(), id='campus_customs', init_timeout=60)
