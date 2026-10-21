@@ -1,9 +1,11 @@
 # Campus Customs: Multi-Agent Operations (Homework 5)
 
+**Live site: https://campus-customs-ott5.onrender.com** (free hosting; the first load after idle can take about a minute)
+
 A team of five AI agents (Boss, Inventory, Accounting, Facilities, Customer Service) works the Campus Customs operations board. They read and update the shop's database only through an MCP server, a FastAPI backend runs the team, and a React dashboard lets a person watch the agents and approve every payment.
 
 - **MCP server:** `mcp_server/server.py` (FastMCP) over `data/campus_customs_new.db`
-- **Backend:** `backend/` (FastAPI + PydanticAI). Every agent uses Claude Opus 5.5 (`claude-opus-5-5`, low effort) through the Anthropic API. The graded submission on `main` used `gpt-6-luna` through Portkey.
+- **Backend:** `backend/` (FastAPI + PydanticAI). Every agent uses Claude Opus 5.5 (`claude-opus-5-5`, low effort) through the Anthropic API. The original submission (commit `d6530ea`, October 14) used `gpt-6-luna` through Portkey.
 - **Dashboard:** `frontend/` (React + Vite + TypeScript)
 - **Docs and evidence:** `output/` (`harness.md` has the full system description)
 

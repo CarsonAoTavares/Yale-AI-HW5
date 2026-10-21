@@ -27,8 +27,8 @@ load_dotenv(PROJECT_DIR / '.env')
 load_dotenv(PROJECT_DIR.parent / '.env')
 os.environ.setdefault('PYDANTIC_AI_NO_BANNER', '1')
 
-# Every agent runs on one model. The graded submission (main branch) used
-# gpt-6-luna through Portkey; this hosted copy uses Claude with an Anthropic key.
+# Every agent runs on one model. The original submission (commit d6530ea) used
+# gpt-6-luna through Portkey; the hosted version uses Claude with an Anthropic key.
 # Low effort keeps runs cheap; thinking stays on (Opus 5.5 can't turn it off).
 MODEL_NAME = 'claude-opus-5-5'
 MODEL_EFFORT = 'low'
