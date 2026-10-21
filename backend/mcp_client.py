@@ -21,8 +21,21 @@ class MCPToolError(RuntimeError):
     pass
 
 
+# One client for every route call. Its stdio transport keeps the MCP server
+# process alive between calls (fastmcp's keep_alive), so only the first call
+# pays the several seconds it takes to start the server on a small host.
+_client: Client | None = None
+
+
+def _get_client() -> Client:
+    global _client
+    if _client is None:
+        _client = Client(build_mcp_transport())
+    return _client
+
+
 async def call_tool(name: str, arguments: dict[str, Any] | None = None) -> Any:
-    async with Client(build_mcp_transport()) as client:
+    async with _get_client() as client:
         result = await client.call_tool(name, arguments or {}, raise_on_error=False)
     if result.is_error:
         message = ' '.join(getattr(c, 'text', '') for c in result.content).strip()
